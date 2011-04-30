@@ -60,7 +60,7 @@ var Level = exports.Level = function(director) {
          explosions.add(new Explosion(collision.b.rect.center));
       });
       // collisions: squares, walls
-      gamejs.sprite.groupCollide(squares, walls, false, true).forEach(function(collision) {
+      gamejs.sprite.groupCollide(squares, walls, true, true).forEach(function(collision) {
          explosions.add(new Explosion(collision.a.rect.center));
          explosions.add(new Explosion(collision.b.rect.center));
       });
