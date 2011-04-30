@@ -4,7 +4,7 @@ var sprites = require('./sprites');
 var Square = sprites.Square;
 var Core = sprites.Core;
 
-exports.Level = function() {
+var Level = exports.Level = function() {
 
    var self = this;
    this.handleEvent = function(event) {
@@ -62,5 +62,32 @@ exports.Level = function() {
    var cores = new gamejs.sprite.Group();
 
    fillLevel()
+   return this;
+};
+
+exports.StartScreen = function(director) {
+
+   function startGame() {
+      director.replaceScene(new Level());
+   };
+
+   this.handleEvent = function(event) {
+      if (event.type === gamejs.event.MOUSE_UP) {
+         startGame();
+      };
+   };
+
+   this.update = function(msDuration) {
+      waitMs += msDuration;
+      if (waitMs > 2000) {
+         startGame();
+      }
+   };
+
+   this.draw = function(display) {
+      display.blit(bg);
+   };
+   var bg = gamejs.image.load('images/about-screen.png');
+   var waitMs = 0;
    return this;
 };
