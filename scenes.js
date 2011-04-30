@@ -9,7 +9,7 @@ var Wall = sprites.Wall;
 var Explosion = sprites.Explosion;
 var config = require('./config');
 
-var Level = exports.Level = function() {
+var Level = exports.Level = function(director) {
 
    var self = this;
    this.handleEvent = function(event) {
@@ -64,6 +64,26 @@ var Level = exports.Level = function() {
          explosions.add(new Explosion(collision.a.rect.center));
          explosions.add(new Explosion(collision.b.rect.center));
       });
+      squares.forEach(function(s) {
+         var r = s.rect;
+         if (r.right <=0 || r.bottom <= 0 || r.left >= config.WIDTH || r.top >= config.HEIGHT) {
+            s.kill();
+         }
+         return;
+      });
+
+      // GAME OVER if all squares destroyed
+      if (squares.sprites().length <= 0) {
+         director.replaceScene(new GameOverScreen(director));
+         return;
+      }
+      // NEXT LEVEL if all circles destroyed
+      if (levelFinished === null && cores.sprites().length <= 0) {
+         levelFinished = setTimeout(function() {
+            director.replaceScene(new WinScreen(director));
+         }, 2000);
+         return;
+      }
       return;
    };
 
@@ -141,18 +161,16 @@ var Level = exports.Level = function() {
    var explosions = new gamejs.sprite.Group();
    fillLevel(levelConfig)
 
+   var levelFinished = null;
+
    return this;
 };
 
 exports.StartScreen = function(director) {
 
-   function startGame() {
-      director.replaceScene(new Level());
-   };
-
    this.handleEvent = function(event) {
       if (event.type === gamejs.event.MOUSE_UP) {
-         startGame();
+         director.replaceScene(new Level(director));
       };
    };
 
@@ -168,5 +186,37 @@ exports.StartScreen = function(director) {
    };
    var bg = gamejs.image.load('images/about-screen.png');
    var waitMs = 0;
+   return this;
+};
+
+var WinScreen = function(director) {
+   this.handleEvent = function(event) {
+      if (event.type === gamejs.event.MOUSE_UP) {
+         director.replaceScene(new Level(director));
+      };
+   };
+
+   this.update = function() {
+   };
+   this.draw = function(display) {
+      display.blit(bg);
+   };
+   var bg = gamejs.image.load('images/win-screen.png');
+   return this;
+};
+
+var GameOverScreen = function(director) {
+   this.handleEvent = function(event) {
+      if (event.type === gamejs.event.MOUSE_UP) {
+         director.replaceScene(new Level(director));
+      };
+   };
+
+   this.update = function() {
+   };
+   this.draw = function(display) {
+      display.blit(bg);
+   };
+   var bg = gamejs.image.load('images/lose-screen.png');
    return this;
 };
