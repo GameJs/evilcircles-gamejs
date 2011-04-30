@@ -9,7 +9,8 @@ gamejs.preload([
    'images/2x.png',
    'images/3x.png',
    'images/about-screen.png',
-   'images/boom.png'
+   'images/boom.png',
+   'images/wall.png'
 ]);
 
 gamejs.ready(function() {

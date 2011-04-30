@@ -5,6 +5,7 @@ var $v = require('gamejs/utils/vectors');
 var sprites = require('./sprites');
 var Square = sprites.Square;
 var Core = sprites.Core;
+var Wall = sprites.Wall;
 var Explosion = sprites.Explosion;
 var config = require('./config');
 
@@ -53,8 +54,14 @@ var Level = exports.Level = function() {
    this.update = function(msDuration) {
       squares.update(msDuration);
       explosions.update(msDuration);
-      // collision detection
+      // collisions: square, cores
       gamejs.sprite.groupCollide(squares, cores, false, true).forEach(function(collision) {
+         explosions.add(new Explosion(collision.a.rect.center));
+         explosions.add(new Explosion(collision.b.rect.center));
+      });
+      // collisions: squares, walls
+      gamejs.sprite.groupCollide(squares, walls, false, true).forEach(function(collision) {
+         explosions.add(new Explosion(collision.a.rect.center));
          explosions.add(new Explosion(collision.b.rect.center));
       });
       return;
@@ -123,7 +130,8 @@ var Level = exports.Level = function() {
          new Square({pos: [200, 400], size: 3})
       ],
       cores: [new Core([950, 250])],
-      walls: [],
+      walls: [new Wall([870, 210]), new Wall([870, 230]), new Wall([870, 250]),
+              new Wall([870, 270]), new Wall([870, 290]), new Wall([870, 310])],
       bgColor: '#00ff00'
    }
 

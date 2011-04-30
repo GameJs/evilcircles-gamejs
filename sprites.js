@@ -85,3 +85,10 @@ Explosion.prototype.draw = function(display) {
    display.blit(this.animationSheet.image, this.rect);
    return;
 };
+
+exports.Wall = function(pos) {
+   var s = new gamejs.sprite.Sprite();
+   s.image = gamejs.image.load('images/wall.png');
+   s.rect = new gamejs.Rect(pos, [s.image.rect.width, s.image.rect.height]);
+   return s;
+};
