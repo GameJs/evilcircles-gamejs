@@ -2,7 +2,8 @@ var gamejs = require('gamejs');
 var $v = require('gamejs/utils/vectors');
 //custom
 var config = require('./config');
-
+var SpriteSheet = require('./animations').SpriteSheet;
+var AnimationSheet = require('./animations').AnimationSheet;
 /**
  *
  */
@@ -52,5 +53,35 @@ Square.prototype.shoot = function(direction, dragDistance) {
          / config.MAX_DRAG_DISTANCE
       ) * config.MAX_SQUARE_SPEED;
    this.speed = Math.max(config.MIN_SQUARE_SPEED, this.speed);
-   console.log('speed is ', this.speed);
+   return;
+};
+
+/**
+ *
+ */
+var Explosion = exports.Explosion = function(center) {
+   Explosion.superConstructor.apply(this, arguments);
+   // FIXME spritesheet can be cached, no need for per instance!
+   var spriteSheet = new SpriteSheet('images/boom.png', {width: 100, height: 100});
+   this.animationSheet = new AnimationSheet(spriteSheet, {'boom': [0,8]});
+   this.animationSheet.start('boom');
+   var size = this.animationSheet.getSize();
+   this.rect = new gamejs.Rect(center, size);
+   this.rect.moveIp(-size[0]/2, -size[1]/2);
+   return this;
+};
+gamejs.utils.objects.extend(Explosion, gamejs.sprite.Sprite);
+
+Explosion.prototype.update = function(msDuration) {
+   this.animationSheet.update(msDuration);
+   if (this.animationSheet.loopFinished) {
+      this.kill();
+      return;
+   }
+
+};
+
+Explosion.prototype.draw = function(display) {
+   display.blit(this.animationSheet.image, this.rect);
+   return;
 };

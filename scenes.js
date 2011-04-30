@@ -5,6 +5,7 @@ var $v = require('gamejs/utils/vectors');
 var sprites = require('./sprites');
 var Square = sprites.Square;
 var Core = sprites.Core;
+var Explosion = sprites.Explosion;
 var config = require('./config');
 
 var Level = exports.Level = function() {
@@ -51,6 +52,11 @@ var Level = exports.Level = function() {
 
    this.update = function(msDuration) {
       squares.update(msDuration);
+      explosions.update(msDuration);
+      // collision detection
+      gamejs.sprite.groupCollide(squares, cores, false, true).forEach(function(collision) {
+         explosions.add(new Explosion(collision.b.rect.center));
+      });
       return;
    };
 
@@ -61,6 +67,7 @@ var Level = exports.Level = function() {
       squares.draw(display);
       walls.draw(display);
       cores.draw(display);
+      explosions.draw(display);
 
       if (line && selectedSquare) {
          gamejs.draw.line(display, '#ff0000', selectedSquare.rect.center, line[1], 5);
@@ -123,6 +130,7 @@ var Level = exports.Level = function() {
    var squares = new gamejs.sprite.Group();
    var walls = new gamejs.sprite.Group();
    var cores = new gamejs.sprite.Group();
+   var explosions = new gamejs.sprite.Group();
    fillLevel(levelConfig)
 
    return this;
@@ -142,7 +150,7 @@ exports.StartScreen = function(director) {
 
    this.update = function(msDuration) {
       waitMs += msDuration;
-      if (waitMs > 2000) {
+      if (waitMs > 10000) {
          startGame();
       }
    };
