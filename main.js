@@ -6,7 +6,9 @@ var scenes = require('./scenes');
 gamejs.preload([
    'images/corners.png',
    'images/core.png',
+   'images/1x.png',
    'images/2x.png',
+   'images/3x.png',
    'images/about-screen.png'
 ]);
 

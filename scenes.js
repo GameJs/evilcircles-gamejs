@@ -9,7 +9,18 @@ var Level = exports.Level = function() {
    var self = this;
    this.handleEvent = function(event) {
       if (event.type === gamejs.event.MOUSE_UP) {
-         // FIXME interaction
+         if (line) {
+            // FIXME drag and drop, line stuff
+         } else {
+            // click on square?
+            var clickedSquares = squares.collidePoint(event.pos);
+            if (clickedSquares.length) {
+               var square = clickedSquares[0];
+               if (square.size > 1) {
+                  breakUp(square);
+               }
+            }
+         }
       };
       return;
    };
@@ -26,6 +37,24 @@ var Level = exports.Level = function() {
       squares.draw(display);
       walls.draw(display);
       cores.draw(display);
+      return;
+   };
+
+   function breakUp(square) {
+      var newSize = square.size - 1;
+      squares.remove(square);
+      var r = square.rect;
+      for (var x in [0,1,2]) {
+         for (var y in [0,1,2]) {
+            var sx = r.left + (x * (r.width / 3));
+            var sy = r.top + (y * (r.width / 3));
+            squares.add(new Square({
+               pos: [sx, sy],
+               size: newSize,
+               direction: square.direction
+            }));
+         }
+      }
       return;
    };
 
@@ -46,22 +75,27 @@ var Level = exports.Level = function() {
     * constructor
     */
    var corners = gamejs.image.load('images/corners.png');
-   var line = [[0,0], [0,0]];
-   // FIXME level specific
+   // interaction
+   var line = null;
+   var selected = null;
+
+   // FIXME level specific, pass in level name as constructor
+   // and lookup config in hash
    var config = {
       squares: [
          new Square({pos: [200, 200], size: 2}),
-         new Square({pos: [200, 400], size: 2})
+         new Square({pos: [200, 400], size: 3})
       ],
       cores: [new Core([950, 250])],
       walls: [],
       bgColor: '#00ff00'
    }
+
    var squares = new gamejs.sprite.Group();
    var walls = new gamejs.sprite.Group();
    var cores = new gamejs.sprite.Group();
-
    fillLevel()
+
    return this;
 };
 

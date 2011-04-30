@@ -16,12 +16,13 @@ var Core = exports.Core = function(pos) {
 gamejs.utils.objects.extend(Core, gamejs.sprite.Sprite);
 
 /**
- *
+ * options: {pos, [size], [direction]}
  */
 var Square = exports.Square = function(options) {
    Square.superConstructor.apply(this, arguments);
 
-   this.image = gamejs.image.load('images/' + (options.size || 3) + 'x.png');
+   this.size = options.size || 3;
+   this.image = gamejs.image.load('images/' + this.size + 'x.png');
    this.rect = new gamejs.Rect(options.pos, [this.image.rect.width, this.image.rect.height]);
    this.direction = $v.unit([
                      Math.random() - 0.5 / config.SQUARE_X_REDUCER,
@@ -30,7 +31,7 @@ var Square = exports.Square = function(options) {
    if (options.startDirection instanceof Array) {
       this.direction = $v.add(
          $v.multiply(this.direction, 0.2),
-         $v.multiply(options.start_direction, 0.8)
+         $v.multiply(options.direction, 0.8)
       );
    }
    return this;
