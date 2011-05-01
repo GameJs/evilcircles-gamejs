@@ -36,6 +36,8 @@ var Level = exports.Level = function(director, levelIdx) {
                event.pos,
                event.pos
             ];
+         } else {
+            line = null;
          }
          return;
       } else if (event.type === gamejs.event.MOUSE_MOTION) {
@@ -189,7 +191,7 @@ var Level = exports.Level = function(director, levelIdx) {
          (new gamejs.mixer.Sound('sounds/game_over.ogg')).play();
       },
       'breakUp': function() {
-         var idx = parseInt(Math.random() * 4, 10);
+         var idx = parseInt(1 + Math.random() * 3, 10);
          (new gamejs.mixer.Sound('sounds/impactcrunch0' + idx + '.ogg')).play();
       }
    };
@@ -259,7 +261,7 @@ var GameOverScreen = function(director, levelIdx) {
 
 var NextLevelScreen = function(director, levelIdx) {
    this.handleEvent = function(event) {
-      if (event.type === gamejs.event.MOUSE_UP) {
+      if (event.type === gamejs.event.MOUSE_DOWN) {
          director.replaceScene(new Level(director, levelIdx));
       };
    };

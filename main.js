@@ -26,6 +26,19 @@ gamejs.preload([
 ]);
 
 gamejs.ready(function() {
+
+   // IEBUG CHROMEBUG
+   // very ugly hack until they fixes some of their
+   // audio bugs we disable audio completely
+   if (navigator.userAgent.indexOf('Chrome') > -1 || navigator.userAgent.indexOf('MSIE') > -1 ||
+      navigator.userAgent.indexOf('Safari') > -1) {
+      gamejs.mixer.Sound = function() {
+         return {
+            play: function() {}
+         };
+      };
+   }
+
    var director = new Director();
    var firstScene = new scenes.StartScreen(director);
    director.start(firstScene);
