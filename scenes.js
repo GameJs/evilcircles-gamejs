@@ -19,7 +19,8 @@ var Level = exports.Level = function(director, levelIdx) {
          // accell square
          if (dragDistance > config.MIN_DRAG_DISTANCE) {
             selectedSquare.shoot(direction, dragDistance);
-            selectedSquare = null;
+         } else if (rightThirdOfScreen.collidePoint(event.pos)) {
+            // nothing happens here
          // click on square
          } else {
             var square = getCollidingSquare(event.pos);
@@ -28,6 +29,7 @@ var Level = exports.Level = function(director, levelIdx) {
             }
          }
          line = null;
+         selectedSquare = null;
       } else if (event.type === gamejs.event.MOUSE_DOWN) {
          selectedSquare = getCollidingSquare(event.pos);
          if (selectedSquare) {
@@ -104,6 +106,7 @@ var Level = exports.Level = function(director, levelIdx) {
       if (line && selectedSquare) {
          gamejs.draw.line(display, '#ff0000', selectedSquare.rect.center, line[1], 5);
       }
+      gamejs.draw.rect(display, 'rgba(100,100,100,0.5)', rightThirdOfScreen, 0);
       return;
    };
 
@@ -143,6 +146,10 @@ var Level = exports.Level = function(director, levelIdx) {
     * constructor
     */
    var corners = gamejs.image.load('images/corners.png');
+   var rightThirdOfScreen = new gamejs.Rect(
+         [config.WIDTH * (1 - config.INACTIVE_PORTION), 0],
+         [config.WIDTH * config.INACTIVE_PORTION, config.HEIGHT]
+      );
    // interaction
    var line = null;
    var selectedSquare = null;

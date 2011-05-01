@@ -10,6 +10,8 @@ exports.MAX_DRAG_DISTANCE = 300; // pixels
 exports.MIN_SQUARE_SPEED = 10; // pixels per sec
 exports.MAX_SQUARE_SPEED = 150; // pixels per sec
 
+exports.INACTIVE_PORTION = 0.3;
+
 exports.levels = [
    {
       squares: [
