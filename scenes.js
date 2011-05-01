@@ -1,6 +1,8 @@
 var gamejs = require('gamejs');
 var $v = require('gamejs/utils/vectors');
 
+var GOD_MODE = false;
+
 // custom
 var sprites = require('./sprites');
 var Square = sprites.Square;
@@ -154,7 +156,7 @@ var Level = exports.Level = function(director, levelIdx) {
       });
 
       // GAME OVER if all squares destroyed
-      if (levelFinished === null) {
+      if (levelFinished === null && !GOD_MODE) {
          if (squares.sprites().length <= 0) {
             levelFinished = setTimeout(function() {
                sounds.gameOver();
@@ -279,7 +281,9 @@ exports.StartScreen = function(director) {
    function startGame() {
       (new gamejs.mixer.Sound('sounds/30306__ERH__tension.ogg')).play();
 
-      var firstLevel = parseInt(document.location.hash.substring(1), 10);
+      var hashParts = document.location.hash.substring(1).split(',');
+      var firstLevel = parseInt(hashParts[0], 10);
+      GOD_MODE = hashParts[1] === 'god';
       director.replaceScene(new Level(director, firstLevel));
    };
 
