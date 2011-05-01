@@ -261,7 +261,8 @@ exports.StartScreen = function(director) {
 
    function startGame() {
       (new gamejs.mixer.Sound('sounds/30306__ERH__tension.ogg')).play();
-      director.replaceScene(new Level(director));
+      var firstLevel = parseInt(document.location.hash.substring(1), 10);
+      director.replaceScene(new Level(director, firstLevel));
    };
 
    this.handleEvent = function(event) {
