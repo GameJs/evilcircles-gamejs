@@ -19,8 +19,6 @@ var Level = exports.Level = function(director, levelIdx) {
          // accell square
          if (dragDistance > config.MIN_DRAG_DISTANCE) {
             selectedSquare.shoot(direction, dragDistance);
-         } else if (rightThirdOfScreen.collidePoint(event.pos)) {
-            // nothing happens here
          // click on square
          } else {
             var square = getCollidingSquare(event.pos);
@@ -48,7 +46,12 @@ var Level = exports.Level = function(director, levelIdx) {
    function getCollidingSquare(pos) {
       var clickedSquares = squares.collidePoint(pos);
       if (clickedSquares.length) {
-         return clickedSquares[0];
+         var square = clickedSquares[0];
+         var cpos = [square.rect.right, square.rect.top]
+         if (!rightThirdOfScreen.collidePoint(cpos)) {
+            dragDistance = 0;
+            return square;
+         }
       }
       return null;
    };
