@@ -3,6 +3,8 @@
 
  <script type="text/javascript">
    (function() {
+      if (document.location.host === 'localhost:8080') return;
+      
      var stss = document.createElement('script');
      stss.type = 'text/javascript';
      stss.async = true;

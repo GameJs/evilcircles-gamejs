@@ -16,7 +16,7 @@ var Level = exports.Level = function(director, levelIdx) {
    var mouseDownLevelEdit = false;
    this.handleEvent = function(event) {
       if (event.type === gamejs.event.MOUSE_UP) {
-         var direction = line && $v.substract(line[0], line[1]);
+         var direction = line && $v.substract(selectedSquare.rect.center, line[1]);
          var dragDistance =  direction && $v.len(direction) || 0;
          // accell square
          if (dragDistance > config.MIN_DRAG_DISTANCE) {
@@ -71,28 +71,41 @@ var Level = exports.Level = function(director, levelIdx) {
 
    function levelEditSet(pos, mouseMotion) {
       var rpos = [pos[0] - (pos[0] % config.RASTER), pos[1] - (pos[1] % config.RASTER)];
-      if (walls.collidePoint(rpos).length ||
+      var doesCollide = walls.collidePoint(rpos).length ||
                cores.collidePoint(rpos).length ||
-               squares.collidePoint(rpos).length) {
-         return;
-      }
-      if (keyDown[gamejs.event.K_w]) {
-         walls.add(new Wall(rpos));
-      } else if (!mouseMotion && keyDown[gamejs.event.K_c]) {
-         cores.add(new Core(rpos));
-      } else if (!mouseMotion && keyDown[gamejs.event.K_1]) {
-         squares.add(new Square({pos: rpos, size: 1}));
-      } else if (!mouseMotion && keyDown[gamejs.event.K_2]) {
-         squares.add(new Square({pos: rpos, size: 2}));
-      } else if (!mouseMotion && keyDown[gamejs.event.K_3]) {
-         squares.add(new Square({pos: rpos, size: 3}));
+               squares.collidePoint(rpos).length;
+      if (doesCollide) {
+         if (keyDown[gamejs.event.K_d]) {
+            walls.collidePoint(rpos).forEach(function(i) {
+               i.kill();
+            });
+            cores.collidePoint(rpos).forEach(function(i) {
+               i.kill();
+            });
+            squares.collidePoint(rpos).forEach(function(i) {
+               i.kill();
+            });
+
+         }
+      } else {
+         if (keyDown[gamejs.event.K_w]) {
+            walls.add(new Wall(rpos));
+         } else if (!mouseMotion && keyDown[gamejs.event.K_c]) {
+            cores.add(new Core(rpos));
+         } else if (!mouseMotion && keyDown[gamejs.event.K_1]) {
+            squares.add(new Square({pos: rpos, size: 1}));
+         } else if (!mouseMotion && keyDown[gamejs.event.K_2]) {
+            squares.add(new Square({pos: rpos, size: 2}));
+         } else if (!mouseMotion && keyDown[gamejs.event.K_3]) {
+            squares.add(new Square({pos: rpos, size: 3}));
+         }
       }
       return;
    };
    function levelDump() {
       console.log(JSON.stringify({
          squares: squares.sprites().map(function(s) {
-            return [s.rect.left, s.rect.top];
+            return {pos: [s.rect.left, s.rect.top], size: s.size};
          }),
          cores: cores.sprites().map(function(s) {
             return [s.rect.left, s.rect.top];
@@ -141,22 +154,24 @@ var Level = exports.Level = function(director, levelIdx) {
       });
 
       // GAME OVER if all squares destroyed
-      if (squares.sprites().length <= 0) {
-         sounds.gameOver();
-         director.replaceScene(new GameOverScreen(director));
-         return;
-      }
-      // NEXT LEVEL if all circles destroyed
-      if (levelFinished === null && cores.sprites().length <= 0) {
-         levelFinished = setTimeout(function() {
-            var nextLevelIdx = levelIdx + 1;
-            if (nextLevelIdx >= config.levels.length) {
-               director.replaceScene(new WinScreen(director));
-            } else {
-               director.replaceScene(new NextLevelScreen(director, nextLevelIdx));
-            }
-         }, 2000);
-         return;
+      if (levelFinished === null) {
+         if (squares.sprites().length <= 0) {
+            sounds.gameOver();
+            director.replaceScene(new GameOverScreen(director));
+            return;
+         }
+         // NEXT LEVEL if all circles destroyed
+         if (cores.sprites().length <= 0) {
+            levelFinished = setTimeout(function() {
+               var nextLevelIdx = levelIdx + 1;
+               if (nextLevelIdx >= config.levels.length) {
+                  director.replaceScene(new WinScreen(director));
+               } else {
+                  director.replaceScene(new NextLevelScreen(director, nextLevelIdx));
+               }
+            }, 2000);
+            return;
+         }
       }
       return;
    };
@@ -171,7 +186,7 @@ var Level = exports.Level = function(director, levelIdx) {
       explosions.draw(display);
 
       if (line && selectedSquare) {
-         gamejs.draw.line(display, '#ff0000', line[0], line[1], 5);
+         gamejs.draw.line(display, '#ff0000', selectedSquare.rect.center, line[1], 5);
       }
       gamejs.draw.rect(display, 'rgba(100,100,100,0.3)', rightThirdOfScreen, 0);
       return;
@@ -261,6 +276,7 @@ exports.StartScreen = function(director) {
 
    function startGame() {
       (new gamejs.mixer.Sound('sounds/30306__ERH__tension.ogg')).play();
+
       var firstLevel = parseInt(document.location.hash.substring(1), 10);
       director.replaceScene(new Level(director, firstLevel));
    };
