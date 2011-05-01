@@ -2,6 +2,8 @@ var gamejs = require('gamejs');
 // custom
 var Director = require('./game').Director;
 var scenes = require('./scenes');
+var touchSupport = require('./touch');
+
 gamejs.preload([
    'images/corners.png',
    'images/core.png',
@@ -26,7 +28,7 @@ gamejs.preload([
 ]);
 
 gamejs.ready(function() {
-
+   touchSupport.init();
    // IEBUG CHROMEBUG
    // very ugly hack until they fixes some of their
    // audio bugs we disable audio completely
