@@ -26,6 +26,10 @@ exports.Director = function() {
       currentScene = scene;
    };
 
+   this.getScene = function() {
+      return currentScene;
+   };
+
    var display = gamejs.display.setMode([config.WIDTH, config.HEIGHT]);
    gamejs.loop(tick, this, 30);
    return this;

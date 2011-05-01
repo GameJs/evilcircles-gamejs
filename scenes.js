@@ -43,12 +43,8 @@ var Level = exports.Level = function(director, levelIdx) {
             ];
          } else {
             line = null;
-            if (keyDown[gamejs.event.K_SPACE]) {
-               levelDump();
-            } else {
-               mouseDownLevelEdit = true;
-               levelEditSet(event.pos);
-            }
+            mouseDownLevelEdit = true;
+            levelEditSet(event.pos);
          }
          return;
       } else if (event.type === gamejs.event.MOUSE_MOTION) {
@@ -104,8 +100,9 @@ var Level = exports.Level = function(director, levelIdx) {
       }
       return;
    };
-   function levelDump() {
-      console.log(JSON.stringify({
+
+   this.getLevelDump = function() {
+      return JSON.stringify({
          squares: squares.sprites().map(function(s) {
             return {pos: [s.rect.left, s.rect.top], size: s.size};
          }),
@@ -116,8 +113,18 @@ var Level = exports.Level = function(director, levelIdx) {
             return [s.rect.left, s.rect.top];
          }),
          bgColor: '#00ff00'
-      }));
-   }
+      });
+   };
+
+   this.setLevelDump = function(dump) {
+      try {
+         var levelConfig = JSON.parse(dump);
+         initLevel(levelConfig);
+      } catch (e) {
+         gamejs.log(e);
+      }
+      return;
+   };
 
    /**
     *
@@ -205,9 +212,9 @@ var Level = exports.Level = function(director, levelIdx) {
             var percent = Math.min(dist - config.MIN_DRAG_DISTANCE, config.MAX_DRAG_DISTANCE) / config.MAX_DRAG_DISTANCE;
             var endpoint = $v.add(selectedSquare.rect.center, $v.multiply($v.unit(dir), percent * config.MAX_DRAG_DISTANCE));
             gamejs.draw.line(display, '#ff0000', selectedSquare.rect.center, endpoint, 5 + 20 * percent);
-         } else {
+         }/* else {
             gamejs.draw.line(display, '#000000', selectedSquare.rect.center, line[1], 1);
-         }
+         }*/
       }
       gamejs.draw.rect(display, 'rgba(100,100,100,0.3)', rightThirdOfScreen, 0);
       return;
@@ -233,7 +240,11 @@ var Level = exports.Level = function(director, levelIdx) {
       return;
    };
 
-   function fillLevel(levelConfig) {
+   function initLevel(levelConfig) {
+      squares = new gamejs.sprite.Group();
+      walls = new gamejs.sprite.Group();
+      cores = new gamejs.sprite.Group();
+      explosions = new gamejs.sprite.Group();
       levelConfig.squares.forEach(function(s) {
          squares.add(new Square(s));
       });
@@ -263,11 +274,8 @@ var Level = exports.Level = function(director, levelIdx) {
    var levelConfig = config.levels[levelIdx];
 
    // objects
-   var squares = new gamejs.sprite.Group();
-   var walls = new gamejs.sprite.Group();
-   var cores = new gamejs.sprite.Group();
-   var explosions = new gamejs.sprite.Group();
-   fillLevel(levelConfig)
+   var squares, walls, cores, explosions;
+   initLevel(levelConfig)
 
    var levelFinished = null;
 

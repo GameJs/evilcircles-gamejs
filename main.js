@@ -27,6 +27,10 @@ gamejs.preload([
    'sounds/30306__ERH__tension.ogg'
 ]);
 
+function $(id) {
+   return document.getElementById(id);
+}
+
 gamejs.ready(function() {
    touchSupport.init();
    // IEBUG CHROMEBUG
@@ -40,6 +44,15 @@ gamejs.ready(function() {
          };
       };
    }
+   // html GUI
+   $('saveButton').addEventListener('click', function() {
+      $('saveArea').value = director.getScene().getLevelDump();
+   }, false);
+   $('loadButton').addEventListener('click', function() {
+      var dump = $('loadArea').value;
+      director.getScene().setLevelDump(dump);
+   }, false);
+   // startup gamejs game
 
    var director = new Director();
    var firstScene = new scenes.StartScreen(director);

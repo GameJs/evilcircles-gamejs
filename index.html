@@ -1,10 +1,12 @@
 <% extends './skins/app.html' %>
 <% subskin content %>
 
+<canvas id="jsgamecanvas"></canvas>
+
  <script type="text/javascript">
    (function() {
       if (document.location.host === 'localhost:8080') return;
-      
+
      var stss = document.createElement('script');
      stss.type = 'text/javascript';
      stss.async = true;
@@ -15,3 +17,19 @@
      s.parentNode.insertBefore(stss, s);
    })();
    </script>
+
+<div style="text-align:left;">
+   <h2>Level Editor Help</h2>
+   <b>Click</b> on the map while <b>holding down a key</b> to create objects:
+   <ul style="list-style-type:none">
+      <li><b>w</b>&nbsp;wall
+      <li><b>c</b>&nbsp;circle
+      <li><b>1</b>,<b>2</b>,<b>3</b> to create squares
+   </ul>
+<p>
+To enable god mode add ",god" to the URL of this page and reload. For example: <a href="http://apps.gamejs.org/evilcircles/latest#0,god">http://apps.gamejs.org/evilcircles/latest#0,god</a>
+</p>
+
+<button id="saveButton">Save --> </button> <input disabled="disabled" id="saveArea"></input> <br/>
+<button id="loadButton">Load <--- </button> <input id="loadArea"></input> <br/>
+</div>
