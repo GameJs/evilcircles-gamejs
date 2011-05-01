@@ -30,7 +30,7 @@ var Square = exports.Square = function(options) {
 gamejs.utils.objects.extend(Square, gamejs.sprite.Sprite);
 
 Square.prototype.update = function(msDuration) {
-   var delta = $v.multiply(this.direction, this.speed);
+   var delta = $v.multiply(this.direction, (this.speed / this.size));
    delta = $v.multiply(delta, (msDuration/1000));
    this.rect.moveIp(delta);
    return;
