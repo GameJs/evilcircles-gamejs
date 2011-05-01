@@ -63,7 +63,7 @@ var Explosion = exports.Explosion = function(center) {
    Explosion.superConstructor.apply(this, arguments);
    // FIXME spritesheet can be cached, no need for per instance!
    var spriteSheet = new SpriteSheet('images/boom.png', {width: 100, height: 100});
-   this.animationSheet = new AnimationSheet(spriteSheet, {'boom': [0,8]});
+   this.animationSheet = new AnimationSheet(spriteSheet, {'boom': [0,8]}, 10);
    this.animationSheet.start('boom');
    var size = this.animationSheet.getSize();
    this.rect = new gamejs.Rect(center, size);
