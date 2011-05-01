@@ -119,6 +119,9 @@ var Level = exports.Level = function(director, levelIdx) {
       }));
    }
 
+   /**
+    *
+    */
    function getCollidingSquare(pos) {
       var clickedSquares = squares.collidePoint(pos);
       if (clickedSquares.length) {
@@ -132,6 +135,9 @@ var Level = exports.Level = function(director, levelIdx) {
       return null;
    };
 
+   /**
+    *
+    */
    this.update = function(msDuration) {
       squares.update(msDuration);
       explosions.update(msDuration);
@@ -180,6 +186,9 @@ var Level = exports.Level = function(director, levelIdx) {
       return;
    };
 
+   /**
+    *
+    */
    this.draw = function(display) {
       display.fill(levelConfig.bgColor);
       display.blit(corners);
@@ -190,7 +199,15 @@ var Level = exports.Level = function(director, levelIdx) {
       explosions.draw(display);
 
       if (line && selectedSquare) {
-         gamejs.draw.line(display, '#ff0000', selectedSquare.rect.center, line[1], 5);
+         var dir = $v.substract(line[1], selectedSquare.rect.center);
+         var dist = $v.len(dir);
+         if (dist > config.MIN_DRAG_DISTANCE) {
+            var percent = Math.min(dist - config.MIN_DRAG_DISTANCE, config.MAX_DRAG_DISTANCE) / config.MAX_DRAG_DISTANCE;
+            var endpoint = $v.add(selectedSquare.rect.center, $v.multiply($v.unit(dir), percent * config.MAX_DRAG_DISTANCE));
+            gamejs.draw.line(display, '#ff0000', selectedSquare.rect.center, endpoint, 5 + 20 * percent);
+         } else {
+            gamejs.draw.line(display, '#000000', selectedSquare.rect.center, line[1], 1);
+         }
       }
       gamejs.draw.rect(display, 'rgba(100,100,100,0.3)', rightThirdOfScreen, 0);
       return;
