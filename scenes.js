@@ -156,8 +156,10 @@ var Level = exports.Level = function(director, levelIdx) {
       // GAME OVER if all squares destroyed
       if (levelFinished === null) {
          if (squares.sprites().length <= 0) {
-            sounds.gameOver();
-            director.replaceScene(new GameOverScreen(director, levelIdx));
+            levelFinished = setTimeout(function() {
+               sounds.gameOver();
+               director.replaceScene(new GameOverScreen(director, levelIdx));
+            }, 2000);
             return;
          }
          // NEXT LEVEL if all circles destroyed
