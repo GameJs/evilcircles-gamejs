@@ -157,7 +157,7 @@ var Level = exports.Level = function(director, levelIdx) {
       if (levelFinished === null) {
          if (squares.sprites().length <= 0) {
             sounds.gameOver();
-            director.replaceScene(new GameOverScreen(director));
+            director.replaceScene(new GameOverScreen(director, levelIdx));
             return;
          }
          // NEXT LEVEL if all circles destroyed
@@ -348,5 +348,6 @@ var NextLevelScreen = function(director, levelIdx) {
       display.blit(bg);
    };
    var bg = gamejs.image.load('images/next-screen.png');
+   document.body.style.cursor = 'auto';
    return this;
 };
