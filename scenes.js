@@ -18,6 +18,7 @@ var Level = exports.Level = function(director, levelIdx) {
          var dragDistance =  direction && $v.len(direction) || 0;
          // accell square
          if (dragDistance > config.MIN_DRAG_DISTANCE) {
+            sounds.shoot();
             selectedSquare.shoot(direction, dragDistance);
          // click on square
          } else {
@@ -81,6 +82,7 @@ var Level = exports.Level = function(director, levelIdx) {
 
       // GAME OVER if all squares destroyed
       if (squares.sprites().length <= 0) {
+         sounds.gameOver();
          director.replaceScene(new GameOverScreen(director));
          return;
       }
@@ -131,6 +133,7 @@ var Level = exports.Level = function(director, levelIdx) {
             }));
          }
       }
+      sounds.breakUp();
       return;
    };
 
@@ -181,6 +184,13 @@ var Level = exports.Level = function(director, levelIdx) {
       },
       'shoot': function() {
          (new gamejs.mixer.Sound('sounds/impactcrunch05.ogg')).play();
+      },
+      'gameOver': function() {
+         (new gamejs.mixer.Sound('sounds/game_over.ogg')).play();
+      },
+      'breakUp': function() {
+         var idx = parseInt(Math.random() * 4, 10);
+         (new gamejs.mixer.Sound('sounds/impactcrunch0' + idx + '.ogg')).play();
       }
    };
 
@@ -189,16 +199,21 @@ var Level = exports.Level = function(director, levelIdx) {
 
 exports.StartScreen = function(director) {
 
+   function startGame() {
+      (new gamejs.mixer.Sound('sounds/30306__ERH__tension.ogg')).play();
+      director.replaceScene(new Level(director));
+   };
+
    this.handleEvent = function(event) {
       if (event.type === gamejs.event.MOUSE_UP) {
-         director.replaceScene(new Level(director));
+         startGame();
       };
    };
 
    this.update = function(msDuration) {
       waitMs += msDuration;
       if (waitMs > 10000) {
-         director.replaceScene(new Level(director));
+         startGame();
       }
    };
 
