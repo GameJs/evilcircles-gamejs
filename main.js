@@ -14,6 +14,10 @@ gamejs.preload([
    'images/win-screen.png',
    'images/lose-screen.png',
    'images/next-screen.png',
+
+   'sounds/impactcrunch05.ogg',
+   'sounds/34201__themfish__glass_house1.ogg',
+   'sounds/34202__themfish__glass_house2.ogg',
 ]);
 
 gamejs.ready(function() {

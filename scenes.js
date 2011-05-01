@@ -58,11 +58,13 @@ var Level = exports.Level = function(director, levelIdx) {
       explosions.update(msDuration);
       // collisions: square, cores
       gamejs.sprite.groupCollide(squares, cores, false, true).forEach(function(collision) {
+         sounds.epicExplode();
          explosions.add(new Explosion(collision.a.rect.center));
          explosions.add(new Explosion(collision.b.rect.center));
       });
       // collisions: squares, walls
       gamejs.sprite.groupCollide(squares, walls, true, true).forEach(function(collision) {
+         sounds.explode();
          explosions.add(new Explosion(collision.a.rect.center));
          explosions.add(new Explosion(collision.b.rect.center));
       });
@@ -106,7 +108,7 @@ var Level = exports.Level = function(director, levelIdx) {
       if (line && selectedSquare) {
          gamejs.draw.line(display, '#ff0000', selectedSquare.rect.center, line[1], 5);
       }
-      gamejs.draw.rect(display, 'rgba(100,100,100,0.5)', rightThirdOfScreen, 0);
+      gamejs.draw.rect(display, 'rgba(100,100,100,0.3)', rightThirdOfScreen, 0);
       return;
    };
 
@@ -145,6 +147,7 @@ var Level = exports.Level = function(director, levelIdx) {
    /**
     * constructor
     */
+   // display
    var corners = gamejs.image.load('images/corners.png');
    var rightThirdOfScreen = new gamejs.Rect(
          [config.WIDTH * (1 - config.INACTIVE_PORTION), 0],
@@ -157,6 +160,7 @@ var Level = exports.Level = function(director, levelIdx) {
    var levelIdx = levelIdx || 0;
    var levelConfig = config.levels[levelIdx];
 
+   // objects
    var squares = new gamejs.sprite.Group();
    var walls = new gamejs.sprite.Group();
    var cores = new gamejs.sprite.Group();
@@ -164,6 +168,18 @@ var Level = exports.Level = function(director, levelIdx) {
    fillLevel(levelConfig)
 
    var levelFinished = null;
+
+   var sounds = {
+      'explode': function() {
+         (new gamejs.mixer.Sound('sounds/34201__themfish__glass_house1.ogg')).play();
+      },
+      'epicExplode': function() {
+         (new gamejs.mixer.Sound('sounds/34202__themfish__glass_house2.ogg')).play();
+      },
+      'shoot': function() {
+         (new gamejs.mixer.Sound('sounds/impactcrunch05.ogg')).play();
+      }
+   };
 
    return this;
 };
@@ -179,7 +195,7 @@ exports.StartScreen = function(director) {
    this.update = function(msDuration) {
       waitMs += msDuration;
       if (waitMs > 10000) {
-         startGame();
+         director.replaceScene(new Level(director));
       }
    };
 
