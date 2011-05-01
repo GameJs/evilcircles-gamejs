@@ -13,6 +13,7 @@ gamejs.preload([
    'images/wall.png',
    'images/win-screen.png',
    'images/lose-screen.png',
+   'images/next-screen.png',
 ]);
 
 gamejs.ready(function() {

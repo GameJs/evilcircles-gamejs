@@ -9,7 +9,7 @@ var Wall = sprites.Wall;
 var Explosion = sprites.Explosion;
 var config = require('./config');
 
-var Level = exports.Level = function(director) {
+var Level = exports.Level = function(director, levelIdx) {
 
    var self = this;
    this.handleEvent = function(event) {
@@ -80,7 +80,12 @@ var Level = exports.Level = function(director) {
       // NEXT LEVEL if all circles destroyed
       if (levelFinished === null && cores.sprites().length <= 0) {
          levelFinished = setTimeout(function() {
-            director.replaceScene(new WinScreen(director));
+            var nextLevelIdx = levelIdx + 1;
+            if (nextLevelIdx >= config.levels.length) {
+               director.replaceScene(new WinScreen(director));
+            } else {
+               director.replaceScene(new NextLevelScreen(director, nextLevelIdx));
+            }
          }, 2000);
          return;
       }
@@ -123,13 +128,13 @@ var Level = exports.Level = function(director) {
 
    function fillLevel(levelConfig) {
       levelConfig.squares.forEach(function(s) {
-         squares.add(s);
+         squares.add(new Square(s));
       });
       levelConfig.walls.forEach(function(w) {
-         walls.add(w);
+         walls.add(new Wall(w));
       });
       levelConfig.cores.forEach(function(c) {
-         cores.add(c);
+         cores.add(new Core(c));
       });
       return;
    };
@@ -142,18 +147,8 @@ var Level = exports.Level = function(director) {
    var line = null;
    var selectedSquare = null;
 
-   // FIXME level specific, pass in level name as constructor
-   // and lookup config in hash
-   var levelConfig = {
-      squares: [
-         new Square({pos: [200, 200], size: 2}),
-         new Square({pos: [200, 400], size: 3})
-      ],
-      cores: [new Core([950, 250])],
-      walls: [new Wall([870, 210]), new Wall([870, 230]), new Wall([870, 250]),
-              new Wall([870, 270]), new Wall([870, 290]), new Wall([870, 310])],
-      bgColor: '#00ff00'
-   }
+   var levelIdx = levelIdx || 0;
+   var levelConfig = config.levels[levelIdx];
 
    var squares = new gamejs.sprite.Group();
    var walls = new gamejs.sprite.Group();
@@ -192,7 +187,7 @@ exports.StartScreen = function(director) {
 var WinScreen = function(director) {
    this.handleEvent = function(event) {
       if (event.type === gamejs.event.MOUSE_UP) {
-         director.replaceScene(new Level(director));
+         director.replaceScene(new Level(director, 0));
       };
    };
 
@@ -205,10 +200,10 @@ var WinScreen = function(director) {
    return this;
 };
 
-var GameOverScreen = function(director) {
+var GameOverScreen = function(director, levelIdx) {
    this.handleEvent = function(event) {
       if (event.type === gamejs.event.MOUSE_UP) {
-         director.replaceScene(new Level(director));
+         director.replaceScene(new Level(director, levelIdx));
       };
    };
 
@@ -218,5 +213,22 @@ var GameOverScreen = function(director) {
       display.blit(bg);
    };
    var bg = gamejs.image.load('images/lose-screen.png');
+   return this;
+};
+
+var NextLevelScreen = function(director, levelIdx) {
+   this.handleEvent = function(event) {
+      if (event.type === gamejs.event.MOUSE_UP) {
+         director.replaceScene(new Level(director, levelIdx));
+      };
+   };
+
+   this.update = function() {
+   };
+
+   this.draw = function(display) {
+      display.blit(bg);
+   };
+   var bg = gamejs.image.load('images/next-screen.png');
    return this;
 };
