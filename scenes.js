@@ -338,6 +338,7 @@ var NextLevelScreen = function(director, levelIdx) {
    this.handleEvent = function(event) {
       if (event.type === gamejs.event.MOUSE_DOWN) {
          director.replaceScene(new Level(director, levelIdx));
+         document.location.hash = "#" + levelIdx;
       };
    };
 
