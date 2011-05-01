@@ -25,7 +25,7 @@ var Level = exports.Level = function(director, levelIdx) {
             sounds.shoot();
             selectedSquare.shoot(direction, dragDistance);
          // click on square
-         } else if (!mouseDownLevelEdit) {
+         } else if (!mouseDownLevelEdit && dragDistance < config.MAX_CLICK_DISTANCE) {
             var square = getCollidingSquare(event.pos);
             if (square && square.size > 1) {
                breakUp(square);
@@ -174,7 +174,7 @@ var Level = exports.Level = function(director, levelIdx) {
             levelFinished = setTimeout(function() {
                sounds.gameOver();
                director.replaceScene(new GameOverScreen(director, levelIdx));
-            }, 2000);
+            }, 1200);
             return;
          }
          // NEXT LEVEL if all circles destroyed
