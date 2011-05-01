@@ -12,6 +12,8 @@ exports.MAX_SQUARE_SPEED = 150; // pixels per sec
 
 exports.INACTIVE_PORTION = 0.3;
 
+exports.RASTER = 30;
+
 exports.levels = [
    {
       squares: [

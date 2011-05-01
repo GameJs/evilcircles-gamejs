@@ -4,17 +4,6 @@ var $v = require('gamejs/utils/vectors');
 var config = require('./config');
 var SpriteSheet = require('./animations').SpriteSheet;
 var AnimationSheet = require('./animations').AnimationSheet;
-/**
- *
- */
-var Core = exports.Core = function(pos) {
-   Core.superConstructor.apply(this, arguments);
-
-   this.image = gamejs.image.load('images/core.png');
-   this.rect = new gamejs.Rect(pos, [this.image.rect.width, this.image.rect.height]);
-   return this;
-};
-gamejs.utils.objects.extend(Core, gamejs.sprite.Sprite);
 
 /**
  * options: {pos, [size], [direction], [speed]}
@@ -89,6 +78,13 @@ Explosion.prototype.draw = function(display) {
 exports.Wall = function(pos) {
    var s = new gamejs.sprite.Sprite();
    s.image = gamejs.image.load('images/wall.png');
+   s.rect = new gamejs.Rect(pos, [s.image.rect.width, s.image.rect.height]);
+   return s;
+};
+
+exports.Core = function(pos) {
+   var s = new gamejs.sprite.Sprite();
+   s.image = gamejs.image.load('images/core.png');
    s.rect = new gamejs.Rect(pos, [s.image.rect.width, s.image.rect.height]);
    return s;
 };

@@ -12,6 +12,8 @@ var config = require('./config');
 var Level = exports.Level = function(director, levelIdx) {
 
    var self = this;
+   var keyDown = {};
+   var mouseDownLevelEdit = false;
    this.handleEvent = function(event) {
       if (event.type === gamejs.event.MOUSE_UP) {
          var direction = line && $v.substract(line[0], line[1]);
@@ -21,7 +23,7 @@ var Level = exports.Level = function(director, levelIdx) {
             sounds.shoot();
             selectedSquare.shoot(direction, dragDistance);
          // click on square
-         } else {
+         } else if (!mouseDownLevelEdit) {
             var square = getCollidingSquare(event.pos);
             if (square && square.size > 1) {
                breakUp(square);
@@ -29,6 +31,7 @@ var Level = exports.Level = function(director, levelIdx) {
          }
          line = null;
          selectedSquare = null;
+         mouseDownLevelEdit = false;
       } else if (event.type === gamejs.event.MOUSE_DOWN) {
          selectedSquare = getCollidingSquare(event.pos);
          if (selectedSquare) {
@@ -38,13 +41,68 @@ var Level = exports.Level = function(director, levelIdx) {
             ];
          } else {
             line = null;
+            if (keyDown[gamejs.event.K_SPACE]) {
+               levelDump();
+            } else {
+               mouseDownLevelEdit = true;
+               levelEditSet(event.pos);
+            }
          }
          return;
       } else if (event.type === gamejs.event.MOUSE_MOTION) {
-         if (line) line[1] = event.pos;
-      };
+         if (line) {
+            line[1] = event.pos;
+         } else {
+            levelEditSet(event.pos, true);
+         }
+         // NOTE is this too expensive per mouse motion?
+         if (rightThirdOfScreen.collidePoint(event.pos)) {
+            document.body.style.cursor = 'not-allowed';
+         } else {
+            document.body.style.cursor = 'auto';
+         }
+      } else if (event.type === gamejs.event.KEY_UP) {
+         keyDown[event.key] = false;
+      } else if (event.type === gamejs.event.KEY_DOWN) {
+         keyDown[event.key] = true;
+      }
       return;
    };
+
+   function levelEditSet(pos, mouseMotion) {
+      var rpos = [pos[0] - (pos[0] % config.RASTER), pos[1] - (pos[1] % config.RASTER)];
+      if (walls.collidePoint(rpos).length ||
+               cores.collidePoint(rpos).length ||
+               squares.collidePoint(rpos).length) {
+         return;
+      }
+      if (keyDown[gamejs.event.K_w]) {
+         walls.add(new Wall(rpos));
+      } else if (!mouseMotion && keyDown[gamejs.event.K_c]) {
+         cores.add(new Core(rpos));
+      } else if (!mouseMotion && keyDown[gamejs.event.K_1]) {
+         squares.add(new Square({pos: rpos, size: 1}));
+      } else if (!mouseMotion && keyDown[gamejs.event.K_2]) {
+         squares.add(new Square({pos: rpos, size: 2}));
+      } else if (!mouseMotion && keyDown[gamejs.event.K_3]) {
+         squares.add(new Square({pos: rpos, size: 3}));
+      }
+      return;
+   };
+   function levelDump() {
+      console.log(JSON.stringify({
+         squares: squares.sprites().map(function(s) {
+            return [s.rect.left, s.rect.top];
+         }),
+         cores: cores.sprites().map(function(s) {
+            return [s.rect.left, s.rect.top];
+         }),
+         walls: walls.sprites().map(function(s) {
+            return [s.rect.left, s.rect.top];
+         }),
+         bgColor: '#00ff00'
+      }));
+   }
 
    function getCollidingSquare(pos) {
       var clickedSquares = squares.collidePoint(pos);
@@ -113,7 +171,7 @@ var Level = exports.Level = function(director, levelIdx) {
       explosions.draw(display);
 
       if (line && selectedSquare) {
-         gamejs.draw.line(display, '#ff0000', selectedSquare.rect.center, line[1], 5);
+         gamejs.draw.line(display, '#ff0000', line[0], line[1], 5);
       }
       gamejs.draw.rect(display, 'rgba(100,100,100,0.3)', rightThirdOfScreen, 0);
       return;
