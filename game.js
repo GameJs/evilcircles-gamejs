@@ -31,6 +31,6 @@ exports.Director = function() {
    };
 
    var display = gamejs.display.setMode([config.WIDTH, config.HEIGHT]);
-   gamejs.loop(tick, this, 30);
+   gamejs.time.fpsCallback(tick, this, 30);
    return this;
 };
